@@ -14,8 +14,11 @@ class Contactually(object):
         self.client = httplib.HTTPSConnection(host)
 
     def _request(self, method, path, data):
-        self.client.request(method, path, data=data, headers=self.headers)
-        return json.loads(self.client.getresponse())
+        self.client.request(method, path, body=data, headers=self.headers)
+        response = json.loads(self.client.getresponse().read())
+        if response.get('errors'):
+            return False, response.get('errors')
+        return True, response.get('data')
 
     def _get_request(self, path, data=None):
         return self._request("GET", path, data)
