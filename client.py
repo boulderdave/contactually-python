@@ -54,7 +54,7 @@ class Contactually(object):
         """
         return self._get_request(path)
 
-    def postpone_user_prompt(self, prompt_id, data, path='/v2/me/prompts%s/postpone'):
+    def postpone_user_prompt(self, prompt_id, data, path='/v2/me/prompts/%s/postpone'):
         return self._put_request(path % prompt_id, data)
 
     def user_tasks(self, path='/v2/me/tasks'):
