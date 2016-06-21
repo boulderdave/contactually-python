@@ -29,6 +29,9 @@ class Contactually(object):
     def _patch_request(self, path, data=None):
         return self._request("PATCH", path, data)
 
+    def _put_request(self, path, data=None):
+        return self._request("PUT", path, data)
+
     def _delete_request(self, path, data=None):
         return self._request("DELETE", path, data)
 
@@ -45,31 +48,46 @@ class Contactually(object):
         return self._get_request(path)
 
     def user_prompts(self, path='/v2/me/prompts'):
+        """
+        Prompts are system-generated via followup rules, programs, or unresponded messages.
+        These can only be completed by performing the prescribed action, NOT by this resource's endpoint
+        """
         return self._get_request(path)
 
     def postpone_user_prompt(self, prompt_id, data, path='/v2/me/prompts%s/postpone'):
         return self._put_request(path % prompt_id, data)
 
     def user_tasks(self, path='/v2/me/tasks'):
+        """
+        This endpoint serves as a convenience for retrieving all tasks assigned
+        to the current user, however, any edits to those tasks (such as marking
+        them completed) occurs via the /v2/tasks/{id} endpoint.
+        """
         return self._get_request(path)
 
     # ---------------------------------------------------------------- #
     # Base Contact
 
     def list_contacts(self, q='', page=1, path='/v2/contacts'):
+        """
+        Contacts will be matched via first_name and/or last_name.
+        """
         return self._get_request("%s?q=%s&page=%s" % (path, q, page))
 
     def create_contact(self, data, path='/v2/contacts'):
+        """
+        Will return existing contact, with all existing data, if email address exists.
+        """
         return self._post_request(path, data)
 
     def fetch_contact(self, contact_id, path='/v2/contacts'):
-        return self._get_request("%s?id=%s" % (path, contact_id))
+        return self._get_request("%s/%s" % (path, contact_id))
 
     def update_contact(self, contact_id, data, path='/v2/contacts'):
-        return self._patch_request("%s?id=%s" % (path, contact_id), data)
+        return self._patch_request("%s/%s" % (path, contact_id), data)
 
     def delete_contact(self, contact_id, path='/v2/contacts'):
-        return self._delete_request("%s?id=%s" % (path, contact_id))
+        return self._delete_request("%s/%s" % (path, contact_id))
 
     # Contact Bucket
 
