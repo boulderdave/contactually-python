@@ -1,39 +1,38 @@
-import httplib
+import requests
 import json
 
 
 class Contactually(object):
-    def __init__(self, token, host='api.contactually.com'):
+    def __init__(self, token, host='https://api.contactually.com'):
 
         self.headers = {
             'Accept': 'application/json',
             'Authorization': 'Bearer %s' % token,
             'Content-type': 'application/json'
         }
-
-        self.client = httplib.HTTPSConnection(host)
+        self.host = host
 
     def _request(self, method, path, data):
-        self.client.request(method, path, body=data, headers=self.headers)
-        response = json.loads(self.client.getresponse().read())
+        r = method(self.host+path, data=data, headers=self.headers)
+        response = json.loads(r.content)
         if response.get('errors'):
             return False, response.get('errors')
         return True, response.get('data')
 
     def _get_request(self, path, data=None):
-        return self._request("GET", path, data)
+        return self._request(requests.get, path, data)
 
     def _post_request(self, path, data=None):
-        return self._request("POST", path, data)
+        return self._request(requests.post, path, data)
 
     def _patch_request(self, path, data=None):
-        return self._request("PATCH", path, data)
+        return self._request(requests.patch, path, data)
 
     def _put_request(self, path, data=None):
-        return self._request("PUT", path, data)
+        return self._request(requests.put, path, data)
 
     def _delete_request(self, path, data=None):
-        return self._request("DELETE", path, data)
+        return self._request(requests.delete, path, data)
 
     # ---------------------------------------------------------------- #
     # Authorized User
